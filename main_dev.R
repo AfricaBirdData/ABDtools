@@ -32,8 +32,8 @@ usethis::use_readme_rmd()
 use_pipe()
 
 # Import packages
-use_package("dplyr")
-use_package("rgee")
+usethis::use_package("dplyr")
+usethis::use_package("rgee")
 
 
 # Function listCwacSites --------------------------------------------------
