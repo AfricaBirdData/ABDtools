@@ -16,7 +16,7 @@ addVarEEimage(
 \arguments{
 \item{ee_feats}{A feature collection with the sites we want to annotate.
 We should have uploaded an sf object with the sites to GEE, previously.
-See \code{\link{uploadCountToEE}}}
+See \code{\link{uploadFeaturesToEE}}}
 
 \item{image}{Either a character string with the name of the image we want to
 use or an GEE image produced with \code{ee$Image()}. See
@@ -36,7 +36,7 @@ will be annotated with all bands (one column for each band).}
 computing means, counts, etc. Sometimes we might want to avoid this behaviour
 and use 0 instead of NA. If so, set unmask to TRUE.}
 
-\item{monitor}{Logical. If TRUE (default) monitoring printed messages produced
+\item{monitor}{Logical. If TRUE (default) monitoring messages produced
 by \code{rgee} will displayed. If FALSE, only high-level messages will be displayed.}
 }
 \value{
