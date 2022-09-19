@@ -14,9 +14,9 @@
 #' "yyyy-mm-dd".
 #' @param band Select a specific band from the collection. Only one band from
 #' the collection can be processed at a time.
-#' @param group_type Optional. The type of grouping we want to perform. This has to be a
+#' @param group_type The type of grouping we want to perform. This has to be a
 #' temporal grouping, either: 'day', 'week', 'month', or 'year'.
-#' @param groups Optional. An integer vector with values for the group. e.g.
+#' @param groups An integer vector with values for the group. e.g.
 #' \code{2008:2019} will group data into years from 2008 to 2019.
 #' @param reducer Optional. The summarizing function applied to each group.
 #' applying any reduction (each image goes to a band).
