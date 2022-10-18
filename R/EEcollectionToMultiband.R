@@ -1,6 +1,9 @@
 #' Convert a GEE collection to multi-band image
 #'
-#' @description This function transforms an image collection made of a number of images,
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' This function transforms an image collection made of a number of images,
 #' each representing a variable at different times (e.g. NDVI measures in different
 #' months) into a multi-band image. Each band in the new image represents a different
 #' time. We can also choose to create temporal summaries to reduce the number of bands (see Details).
@@ -81,19 +84,27 @@ EEcollectionToMultiband <- function(collection, dates, band,
 
   if(!is.null(reducer)){
 
-  # Create a list of groups
-  ee_groups <-  rgee::ee$List(groups)
+    if(length(groups) > 1){
 
-  # Set filter
-  filter <- paste0("ee_layer$filter(rgee::ee$Filter$calendarRange(m, m,'", group_type,"'))$", reducer,"()")
+      # Set filter
+      filter <- paste0("ee_layer$filter(rgee::ee$Filter$calendarRange(m, m,'", group_type,"'))$", reducer,"()")
 
-  # Group and reduce within groups by reducer
-  byGroup <- rgee::ee$ImageCollection$fromImages(
-    ee_groups$map(
-      rgee::ee_utils_pyfunc(
-        function(m){
-          return(eval(parse(text = filter)))
-        })))
+      # Create a list of groups
+      ee_groups <-  rgee::ee$List(groups)
+
+      # Create image collections by groups
+      byGroup <- rgee::ee$ImageCollection$fromImages(
+        ee_groups$map(
+          rgee::ee_utils_pyfunc(
+            function(m){
+              return(eval(parse(text = filter)))
+            })))
+
+    } else {
+
+      stop("There is only one group/band, perhaps you want to use addVarEEcollection() instead")
+
+      }
 
   } else {
 

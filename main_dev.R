@@ -34,7 +34,7 @@ use_pipe()
 # Import packages
 usethis::use_package("dplyr")
 usethis::use_package("rgee")
-
+usethis::use_package("lifecycle")
 
 # Function listCwacSites --------------------------------------------------
 

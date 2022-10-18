@@ -43,6 +43,8 @@ A multi-band image will be created at the GEE server. The image is not
 stored in the users assets directory, so it can only be used in the current session.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function transforms an image collection made of a number of images,
 each representing a variable at different times (e.g. NDVI measures in different
 months) into a multi-band image. Each band in the new image represents a different
