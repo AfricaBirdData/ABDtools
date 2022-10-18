@@ -28,12 +28,14 @@ See \href{https://developers.google.com/earth-engine/datasets/catalog}{GEE catal
 "yyyy-mm-dd".}
 
 \item{temp_reducer}{A character string specifying the function to summarize
-collection across time. It is common to use "mean", "sum" or "count", but
+collection across time. Only necessary if, after filter by date, the collection
+has more than one image. It is common to use "mean", "sum" or "count", but
 there are many others, see 'ee.Reducer' under Client Libraries at
 \url{https://developers.google.com/earth-engine/apidocs}.}
 
 \item{spt_reducer}{A character string specifying the function to apply when
-extracting values for each feature. It is common to use "mean", "sum" or
+extracting values for each feature. Only necessary if features in \code{ee_feats},
+are polygons. It is common to use "mean", "sum" or
 "count", but there are many others, see 'ee.Reducer' under Client Libraries at
 \url{https://developers.google.com/earth-engine/apidocs}.}
 

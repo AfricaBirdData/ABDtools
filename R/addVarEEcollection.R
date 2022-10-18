@@ -9,11 +9,13 @@
 #' @param dates A character vector with two elements c(start, end). Format must be
 #' "yyyy-mm-dd".
 #' @param temp_reducer A character string specifying the function to summarize
-#' collection across time. It is common to use "mean", "sum" or "count", but
+#' collection across time. Only necessary if, after filter by date, the collection
+#' has more than one image. It is common to use "mean", "sum" or "count", but
 #' there are many others, see 'ee.Reducer' under Client Libraries at
 #' \url{https://developers.google.com/earth-engine/apidocs}.
 #' @param spt_reducer A character string specifying the function to apply when
-#' extracting values for each feature. It is common to use "mean", "sum" or
+#' extracting values for each feature. Only necessary if features in `ee_feats`,
+#' are polygons. It is common to use "mean", "sum" or
 #' "count", but there are many others, see 'ee.Reducer' under Client Libraries at
 #' \url{https://developers.google.com/earth-engine/apidocs}.
 #' @param bands Select specific bands from the image. If not specified, features
@@ -83,9 +85,21 @@ addVarEEcollection <- function(ee_feats, collection, dates,
     ee_layer <- ee_layer$unmask()
   }
 
-  # Reduce to image
-  ee_temp_reducer <- paste0("rgee::ee$Reducer$", temp_reducer, "()")
-  ee_layer <- ee_layer$reduce(eval(parse(text = ee_temp_reducer)))
+  # Apply temporal reduction if necessary
+  if(!is.null(temp_reducer)){
+    ee_temp_reducer <- paste0("rgee::ee$Reducer$", temp_reducer, "()")
+    ee_layer <- ee_layer$reduce(eval(parse(text = ee_temp_reducer)))
+  } else {
+
+    # temp_reducer is needed if more than one image in the collection
+    n_img <- ee_layer$size()$getInfo()
+    if(n_img > 1){
+      stop("There are more than 1 image in the collection. temp_reducer needs to be specified")
+    }
+
+    ee_layer <- ee$Image(ee_layer$first())
+
+  }
 
   if(!monitor) sink(nullfile())
 
