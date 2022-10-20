@@ -2,5 +2,5 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
-main_dev
+main_dev.R
 beta/
