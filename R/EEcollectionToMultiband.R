@@ -113,7 +113,7 @@ EEcollectionToMultiband <- function(collection, dates, band,
   }
 
   # Transform into a multiband image and reproject
-  stackCollection <- byGroup$toBands()$rename(as.character(groups))$
+  stackCollection <- byGroup$toBands()$rename(paste0(band, "_", groups))$
     reproject(ee_proj)
 
   return(stackCollection)
