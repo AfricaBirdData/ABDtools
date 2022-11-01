@@ -51,8 +51,10 @@ addVarEEimage <- function(ee_feats, image, reducer = NULL,
   # Get image
   if(is.character(image)){
     ee_layer <- rgee::ee$Image(image)
+    text_image <- image
   } else if("ee.image.Image" %in% class(image)){
     ee_layer <- image
+    text_image <- "image"
   } else {
     stop("image must be either a character string or a GEE image")
   }
@@ -67,7 +69,7 @@ addVarEEimage <- function(ee_feats, image, reducer = NULL,
     ee_layer <- ee_layer$unmask()
   }
 
-  message(paste(Sys.time(), "Annotating", deparse(substitute(ee_feats)), "with", image))
+  message(paste(Sys.time(), "Annotating", deparse(substitute(ee_feats)), "with", text_image))
 
   # Get nominal scale for the layer (native resolution)
   scale <- ee_layer$projection()$nominalScale()$getInfo()
