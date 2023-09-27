@@ -38,9 +38,9 @@
 #' assetId <- file.path(ee_get_assethome(), 'counts')
 #'
 #' # Upload to GEE (if not done already - do this only once per asset)
-#' uploadCountsToEE(feats = counts,
-#'                   asset_id = assetId,
-#'                   load = FALSE)
+#' uploadFeaturesToEE(feats = counts,
+#'                    asset_id = assetId,
+#'                    load = FALSE)
 #'
 #' # Load the remote asset to you local computer to work with it
 #' ee_counts <- ee$FeatureCollection(assetId)
