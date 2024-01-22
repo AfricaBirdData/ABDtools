@@ -117,7 +117,7 @@ addVarEEcollection <- function(ee_feats, collection, dates,
     rgee::ee$Image$reduceRegions(ee_feats,
                                  eval(parse(text = ee_spt_reducer)),
                                  scale = scale) %>%
-    rgee::ee_as_sf(via = "drive")
+    rgee::ee_as_sf(via = "gcs")
 
   # Fix layer name
   if(!is.null(bands) & length(bands) == 1){

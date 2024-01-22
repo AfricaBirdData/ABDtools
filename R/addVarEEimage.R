@@ -19,6 +19,8 @@
 #' and use 0 instead of NA. If so, set unmask to TRUE.
 #' @param monitor Logical. If TRUE (default) monitoring messages produced
 #' by `rgee` will displayed. If FALSE, only high-level messages will be displayed.
+#' @param transfer A list with parameters used to communicate to and from GEE. It
+#' must have to elements named `via` and `container`. See \code{\link[rgee]{ee_as_sf}}
 #'
 #' @return A dataframe similar to \code{ee_sites} with variables added from the
 #' \code{bands} selected from \code{collection}. Note that following \href{https://github.com/r-spatial/rgee}{rgee}
@@ -46,7 +48,8 @@
 #'                                  bands = "occurrence")
 #' }
 addVarEEimage <- function(ee_feats, image, reducer = NULL,
-                          bands = NULL, unmask = FALSE, monitor = TRUE){
+                          bands = NULL, unmask = FALSE, monitor = TRUE,
+                          transfer = list(via = "drive", container = "rgee_backup")){
 
   # Get image
   if(is.character(image)){
@@ -90,7 +93,8 @@ addVarEEimage <- function(ee_feats, image, reducer = NULL,
     rgee::ee$Image$reduceRegions(ee_feats,
                                  eval(parse(text = eeReducer)),
                                  scale = scale) %>%
-    rgee::ee_as_sf(via = "drive")
+    rgee::ee_as_sf(via = transfer$via,
+                   container = transfer$container)
 
   # Fix layer name
   if(!is.null(bands) & length(bands) == 1){

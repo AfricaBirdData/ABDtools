@@ -10,7 +10,8 @@ uploadFeaturesToEE(
   load = TRUE,
   max_feats = 16250,
   max_try = 10,
-  monitor = TRUE
+  monitor = TRUE,
+  transfer = list(via = "getInfo_to_asset", bucket = NULL)
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ of the asset on GEE.}
 
 \item{monitor}{Logical. If TRUE (default) monitoring printed messages produced
 by \code{rgee} will displayed. If FALSE, only high-level messages will be displayed.}
+
+\item{transfer}{A list with parameters used to communicate to and from GEE. It
+must have to elements named \code{via} and \code{bucket}. See \code{\link[rgee]{sf_as_ee}}}
 }
 \value{
 Features are uploaded to GEE. In addition the resulting GEE feature

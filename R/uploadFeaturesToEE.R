@@ -12,6 +12,8 @@
 #' of the asset on GEE.
 #' @param monitor Logical. If TRUE (default) monitoring printed messages produced
 #' by `rgee` will displayed. If FALSE, only high-level messages will be displayed.
+#' @param transfer A list with parameters used to communicate to and from GEE. It
+#' must have to elements named `via` and `bucket`. See \code{\link[rgee]{sf_as_ee}}
 #'
 #' @return Features are uploaded to GEE. In addition the resulting GEE feature
 #' collection can be loaded into the R environment.
@@ -51,38 +53,73 @@
 #'                                 load = TRUE)
 #' }
 uploadFeaturesToEE <- function(feats, asset_id, load = TRUE, max_feats = 16250,
-                             max_try = 10, monitor = TRUE){
+                             max_try = 10, monitor = TRUE,
+                             transfer = list(via = "getInfo_to_asset", bucket = NULL)){
 
-  nfeats <- nrow(feats)
+  total_feats <- nrow(feats)
 
   message(paste(Sys.time(), "Uploading features to", asset_id))
 
   # Upload features
   if(!monitor) sink(nullfile())
 
-  if(nfeats > max_feats){                                   # For large objects
+  if(total_feats > max_feats){                                   # For large objects
 
-    print("Object larger than max_feats, so splitting in half")
+    print("Object larger than max_feats, so splitting data into pieces")
 
-    halfeats <- nfeats %/% 2
+    parts <- total_feats %/% max_feats
+    extra <- (total_feats %% max_feats) > 0
 
-    ps <- list(p1 = feats %>%
-                 dplyr::slice(1:halfeats),
-               p2 = feats %>%
-                 dplyr::slice((halfeats + 1):nfeats))
+    parts <- parts + extra
 
-    eenames <- sprintf("%s/%s", rgee::ee_get_assethome(), c("p1", "p2"))
+    total_feats <- ceiling(total_feats / parts)
 
-    lapply(seq_along(ps), function(i)
-      rgee::sf_as_ee(ps[[i]], assetId = eenames[i], via = "getInfo_to_asset"))
+    ps <- vector("list", length = parts)
 
-    eep1 <- rgee::ee$FeatureCollection(eenames[1])
-    eep2 <- rgee::ee$FeatureCollection(eenames[2])
+    for(i in seq_len(parts)){
 
-    out <- eep1$merge(eep2)
+      ini <- total_feats * (i - 1) + 1
+      end <- min(total_feats, total_feats * i)
 
-    task <- rgee::ee_table_to_asset(collection = out,
-                                    description = "CWAC merged feats",
+      ps[[i]] <- feats[ini:end, ]
+
+    }
+
+    names(ps) <- paste0("p", seq_len(parts))
+
+    eenames <- file.path(rgee::ee_get_assethome(), names(ps))
+
+    # Upload the different feature collections to GEE
+    message("Uploading features:")
+    for(i in seq_along(ps)){
+      message(paste("Part", i))
+      rgee::sf_as_ee(ps[[i]], assetId = eenames[i],
+                     via = transfer$via, bucket = transfer$bucket)
+      message("Done")
+    }
+
+    # Create an array to store feature collections
+    feat_col_array <- vector("list", length = parts)
+
+    # Loop to create feature collections and add them to the array
+    for (i in seq_len(parts)) {
+      feat_col = rgee::ee$FeatureCollection(eenames[i])
+      feat_col_array[[i]] <- feat_col
+    }
+
+    merged_col <- feat_col_array$reduce(
+
+      # Function to merge two feature collections
+      rgee::ee_utils_pyfunc(
+        function(collection1, collection2){
+          return(collection1$merge(collection2))
+        })
+
+    )
+
+    # Here we might need ee_table_to_drive or ee_table_to_gcs
+    task <- rgee::ee_table_to_asset(collection = merged_col,
+                                    description = "merged feats",
                                     assetId = asset_id,
                                     overwrite = TRUE)
     task$start()
@@ -91,7 +128,8 @@ uploadFeaturesToEE <- function(feats, asset_id, load = TRUE, max_feats = 16250,
 
     rgee::sf_as_ee(feats,
                    assetId = asset_id,
-                   via = "getInfo_to_asset")
+                   via = transfer$via,
+                   bucket = transfer$bucket)
   }
 
   # check that the asset has been produced and wait longer otherwise
