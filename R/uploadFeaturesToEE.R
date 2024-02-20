@@ -107,15 +107,17 @@ uploadFeaturesToEE <- function(feats, asset_id, load = TRUE, max_feats = 16250,
       feat_col_array[[i]] <- feat_col
     }
 
-    merged_col <- feat_col_array$reduce(
+    if (length(feat_col_array) > 0) {
+      # Initialize merged_col with the first element of feat_col_array
+      merged_col <- feat_col_array[[1]]
 
-      # Function to merge two feature collections
-      rgee::ee_utils_pyfunc(
-        function(collection1, collection2){
-          return(collection1$merge(collection2))
-        })
-
-    )
+      # Loop through the rest of the elements in feat_col_array and merge them with merged_col
+      if (length(feat_col_array) > 1) {
+        for (i in 2:length(feat_col_array)) {
+          merged_col <- merged_col$merge(feat_col_array[[i]])
+        }
+      }
+    }
 
     # Here we might need ee_table_to_drive or ee_table_to_gcs
     task <- rgee::ee_table_to_asset(collection = merged_col,
