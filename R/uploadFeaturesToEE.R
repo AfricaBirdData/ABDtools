@@ -72,14 +72,14 @@ uploadFeaturesToEE <- function(feats, asset_id, load = TRUE, max_feats = 16250,
 
     parts <- parts + extra
 
-    total_feats <- ceiling(total_feats / parts)
+    part_feats <- ceiling(total_feats / parts)
 
     ps <- vector("list", length = parts)
 
     for(i in seq_len(parts)){
 
-      ini <- total_feats * (i - 1) + 1
-      end <- min(total_feats, total_feats * i)
+      ini <- part_feats * (i - 1) + 1
+      end <- min(total_feats, part_feats * i)
 
       ps[[i]] <- feats[ini:end, ]
 
