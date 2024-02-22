@@ -12,7 +12,8 @@ addVarEEcollection(
   spt_reducer = NULL,
   bands = NULL,
   unmask = FALSE,
-  monitor = TRUE
+  monitor = TRUE,
+  transfer = list(via = "drive", container = "rgee_backup")
 )
 }
 \arguments{
@@ -48,6 +49,9 @@ and use 0 instead of NA. If so, set unmask to TRUE.}
 
 \item{monitor}{Logical. If TRUE (default) monitoring messages produced
 by \code{rgee} will displayed. If FALSE, only high-level messages will be displayed.}
+
+\item{transfer}{A list with parameters used to communicate to and from GEE. It
+must have to elements named \code{via} and \code{container}. See \code{\link[rgee]{ee_as_sf}}}
 }
 \value{
 A dataframe similar to \code{ee_feats} with variables added from the
