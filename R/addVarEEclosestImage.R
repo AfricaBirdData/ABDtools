@@ -77,7 +77,11 @@ addVarEEclosestImage <- function(ee_feats, collection, reducer = NULL, maxdiff,
 
   # Remove missing values (this will depend on the layer)
   if(unmask){
-    ee_layer <- ee_layer$unmask()
+    ee_layer <- ee_layer$map(
+      rgee::ee_utils_pyfunc(
+        function(image){
+          return(image$unmask())
+        }))
   }
 
   # Function to add date in milliseconds

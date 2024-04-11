@@ -85,7 +85,11 @@ addVarEEcollection <- function(ee_feats, collection, dates,
 
   # Remove missing values (this will depend on the layer)
   if(unmask){
-    ee_layer <- ee_layer$unmask()
+    ee_layer <- ee_layer$map(
+      rgee::ee_utils_pyfunc(
+        function(image){
+          return(image$unmask())
+        }))
   }
 
   # Apply temporal reduction if necessary
