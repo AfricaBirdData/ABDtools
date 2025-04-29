@@ -8,8 +8,8 @@ EEcollectionToMultiband(
   collection,
   dates,
   band,
-  group_type,
-  groups,
+  group_type = NULL,
+  groups = NULL,
   reducer = NULL,
   unmask = FALSE
 )
