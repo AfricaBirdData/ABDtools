@@ -53,7 +53,8 @@
 #'
 #' }
 EEcollectionToMultiband <- function(collection, dates, band,
-                                    group_type, groups,
+                                    group_type = NULL,
+                                    groups = NULL,
                                     reducer = NULL,
                                     unmask = FALSE){
 
@@ -104,17 +105,30 @@ EEcollectionToMultiband <- function(collection, dates, band,
 
       stop("There is only one group/band, perhaps you want to use addVarEEcollection() instead")
 
-      }
+    }
+
+    # Transform into a multiband image and reproject
+    # Bands need to be renamed otherwise, they only keep the unique band number
+    # and produce an error
+    stackCollection <- byGroup$toBands()$rename(paste0(band, "_", groups))$
+      reproject(ee_proj)
 
   } else {
 
     byGroup <- ee_layer
 
+    # Bands need to be renamed otherwise, they only keep the unique band number
+    # and produce an error. I am using the property "system:index", but this might
+    # produce errors with some layers!
+    groups <- ee_layer$aggregate_array("system:index")$getInfo()
+
+    # Transform into a multiband image and reproject
+    stackCollection <- byGroup$toBands()$rename(paste0(band, "_", groups))$
+      reproject(ee_proj)
+
   }
 
-  # Transform into a multiband image and reproject
-  stackCollection <- byGroup$toBands()$rename(paste0(band, "_", groups))$
-    reproject(ee_proj)
+
 
   return(stackCollection)
 
