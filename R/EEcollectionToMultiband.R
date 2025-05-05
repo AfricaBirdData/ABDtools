@@ -58,6 +58,11 @@ EEcollectionToMultiband <- function(collection, dates, band,
                                     reducer = NULL,
                                     unmask = FALSE){
 
+  # Checks
+  if(length(dates) != 2){
+    stop("Dates must be a character vector of length two with start and end dates")
+  }
+
   # Get image
   if(is.character(collection)){
     ee_layer <- rgee::ee$ImageCollection(collection)$
